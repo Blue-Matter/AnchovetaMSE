@@ -6,7 +6,7 @@ output: html_document
 ---
 &nbsp;
 
-<img src="img/ANchovies.jpg" width="800">
+<img src="img/anchovies.jpg" width="850">
 &nbsp;
 
 <img src="img/pew.png" width="140">
