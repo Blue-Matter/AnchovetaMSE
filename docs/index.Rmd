@@ -96,9 +96,9 @@ All methods and draft papers complete:
 
 [Anchoveta MSE GitHub Repository](https://github.com/Blue-Matter/Anchoveta MSE/)
 
-[Draft paper (private Google Doc for collaborators)](https://docs.google.com/document/d/1DduUQIQQrJFBXquaoPXIjKMvuVVZMYQf9H6phEI_uGQ/edit?usp=sharing)
+[Draft Report)](https://docs.google.com/document/d/1SYY8692lybi8d1tWeWUGGOlFiExEBEoJNpnuRanUrHM/edit)
 
-
+[OM Technical Specification Report](Reports/Peruvian_Anchoveta.html)
 
 </div>
 
