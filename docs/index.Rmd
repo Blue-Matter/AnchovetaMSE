@@ -1,5 +1,5 @@
 ---
-title: "Evaluating the practicalities of Peruvian Anchoveta harvest strategies and ecosystem-based fisheries management"
+title: "Evaluating the Practicalities of Peruvian Anchoveta Harvest Strategies and Ecosystem-Based Fisheries Management"
 author: "Tom Carruthers <tom@bluematterscience.com>"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
@@ -39,6 +39,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 ```
+
 ***
 
 ### Project details
@@ -76,51 +77,92 @@ consistent with precautionary ecosystem-based fisheries management, may be appli
 
 ***
 
-### Project status (0%)
+### Project status (33%)
 
-All methods and draft papers complete:
+Completed:
 
-* An individual tagging model has been integrated into the the MSE framework
-* 
+* Operating model specified and fitted
 
+In progress:
 
+* Designing and running a range of harvest strategies
+* Write up results in a draft report (see below)
+
+&nbsp;
+&nbsp;
+
+***
+### Draft Report
+
+A private Google doc is available [here](https://docs.google.com/document/d/1SYY8692lybi8d1tWeWUGGOlFiExEBEoJNpnuRanUrHM/edit). 
+
+Please email tom@bluematterscience.com to request access.  
 
 &nbsp;
 &nbsp;
 
 ***
 
-### Links 
+### Appendices
 
-<div class="col2">
+A detailed description of the Reference Case operating model is available in [Appendix 1](Reports/Peruvian_Anchoveta.html) which includes justifications and references in support of the various population and fishing dynamics. 
 
-[Anchoveta MSE GitHub Repository](https://github.com/Blue-Matter/Anchoveta MSE/)
-
-[Draft Report)](https://docs.google.com/document/d/1SYY8692lybi8d1tWeWUGGOlFiExEBEoJNpnuRanUrHM/edit)
-
-[OM Technical Specification Report](Reports/Peruvian_Anchoveta.html)
-
-</div>
+The operating model was conditioned on publicly available data published in [Oliveros-Ramos 2010](Paper/Oliveros - Ramos 2010.pdf). Operating model estimates and statistical properties of model fit are available in a detailed [operating model conditioning report](Reports/RCM.html)
 
 &nbsp;
 &nbsp;
 
 ***
 
-### Code to run example CMPs
+### Apps
 
-Bla bla:
+The Reference Case operating model has been uploaded to the [Reference Point Calculator App](apps.bluematterscience.com/RPC). 
+
+Once you have selected this case study you can investigate historical reference points and test a range of harvest strategies. 
+
+&nbsp;
+&nbsp;
+
+***
+
+### Source Code and Objects 
+
+The raw code and openMSE objects required to run the MSE are available in the public [Anchoveta MSE GitHub Repository](https://github.com/Blue-Matter/Anchoveta MSE/)
+
+Code is provided below on how to install and run examples from the package. 
+
+&nbsp;
+&nbsp;
+
+***
+
+### Running an example MSE for Anchoveta
+
+The operating model is available from a R package in a GitHub repository. You can install it from GitHub:
 
 ```{r packageinstall,echo=T, eval=FALSE}
-
+install.packages(devtools)
+devtools::install_github('blue-matter/AnchovettaMSE')
+library(AnchovettaMSE)
 
 ```
 
+&nbsp;
+&nbsp;
+
+***
 
 ### Demonstration Code
 
 ```{r demo, echo=TRUE, eval=FALSE}
+library(openMSE)
+library(AnchovettaMSE)
 
+avail('MP') # a list of available MPs. Those starting 'PA' are designed for use with Peruvian Anchoveta
+
+avail('OM') # a list of operating models. Those starting 'PA' are Peruvian Anchoveta operating models
+testMSE<-runMSE(PA_RefCase,MPs=c("PA_F30","PA_F40"))
+plot(testMSE)
   
 ```
 
@@ -130,13 +172,31 @@ Bla bla:
 
 
 ***
-### References
 
-[NOAA BTRP](https://www.fisheries.noaa.gov/grant/bluefin-tuna-research-program)
+### Background documents and referenced material
 
-[The Ocean Foundation](https://oceanfdn.org/)
+<div class="col2">
+
+2010 Stock Assessment ([Oliveros - Ramos, 2010](Papers/Oliveros - Ramos 2010.pdf))
+
+Climate change and Anchoveta ([Oliveros - Ramos et al. 2021](Papers/fao-667-14-Oliveros_etal-2021-anchovy_climate_change.pdf))
+
+Growth, Egg production ([Perea et al. 2011](Papers/Potential_egg_production_recruitment_and_closed_fi.pdf))
+
+</div>
+
+&nbsp;
+&nbsp;
+
+***
+
+### Links
+
+[The Pew Charitable Trusts](https://www.pewtrusts.org/en/)
 
 [Blue Matter](https://www.bluematterscience.com/)
+
+[IMARPE](https://www.gob.pe/imarpe)
 
 &nbsp;
 &nbsp;
@@ -145,7 +205,7 @@ Bla bla:
 
 ### Acknowledgements
 
-This work was funded by a US National Oceanic and Atmospheric Adiministration grant.
+This work was funded by The Pew Charitable Trusts. Many thanks to Ashley Wilson for guidance during project development and scoping. 
 
 
 &nbsp;
