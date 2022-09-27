@@ -103,11 +103,11 @@ Please email tom@bluematterscience.com to request access.
 
 ***
 
-### Appendices
+### Report Appendices
 
 A detailed description of the Reference Case operating model is available in [Appendix 1](Reports/Peruvian_Anchoveta.html) which includes justifications and references in support of the various population and fishing dynamics. 
 
-The operating model was conditioned on publicly available data published in [Oliveros-Ramos 2010](Paper/Oliveros - Ramos 2010.pdf). Operating model estimates and statistical properties of model fit are available in a detailed [operating model conditioning report](Reports/RCM.html)
+The operating model was conditioned on publicly available data published in [Oliveros-Ramos 2010](Paper/Oliveros - Ramos 2010.pdf). Operating model estimates and statistical properties of model fit are available in a detailed operating model conditioning report[Appendix 2](Reports/RCM.html)
 
 &nbsp;
 &nbsp;
@@ -116,7 +116,7 @@ The operating model was conditioned on publicly available data published in [Oli
 
 ### Apps
 
-The Reference Case operating model has been uploaded to the [Reference Point Calculator App](apps.bluematterscience.com/RPC). 
+The Reference Case operating model has been uploaded to the [Reference Point Calculator App](https:apps.bluematterscience.com/RPC). 
 
 Once you have selected this case study you can investigate historical reference points and test a range of harvest strategies. 
 
