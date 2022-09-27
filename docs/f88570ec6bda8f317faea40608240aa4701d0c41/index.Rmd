@@ -177,11 +177,11 @@ plot(testMSE)
 
 <div class="col2">
 
-2010 Stock Assessment ([Oliveros - Ramos, 2010](Papers/Oliveros - Ramos 2010.pdf))
+2010 Stock Assessment ([Oliveros - Ramos, 2010](References/Oliveros - Ramos 2010.pdf))
 
-Climate change and Anchoveta ([Oliveros - Ramos et al. 2021](Papers/fao-667-14-Oliveros_etal-2021-anchovy_climate_change.pdf))
+Climate change and Anchoveta ([Oliveros - Ramos et al. 2021](References/fao-667-14-Oliveros_etal-2021-anchovy_climate_change.pdf))
 
-Growth, Egg production ([Perea et al. 2011](Papers/Potential_egg_production_recruitment_and_closed_fi.pdf))
+Growth, Egg production ([Perea et al. 2011](References/Potential_egg_production_recruitment_and_closed_fi.pdf))
 
 </div>
 
