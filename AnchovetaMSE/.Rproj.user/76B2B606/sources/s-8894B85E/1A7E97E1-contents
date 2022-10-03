@@ -1,0 +1,23 @@
+
+# Tag release designs
+
+setwd("C:/GitHub/AnchovetaMSE/")
+setwd("C:/Users/tcarruth/Documents/GitHub/AnchovetaMSE/")
+
+OMfiles<-paste0("G:/Shared drives/BM shared/1. Projects/Anchoveta - Pew/OM Specification/OM_",1:7,".rda")
+OMnams<-paste0("PA_OM_",1:7)
+
+for(i in 1:7){
+  assign(OMnams[i],readRDS(OMfiles[i]))
+  do.call(save, list(objname=OMnams[i],file=paste0(getwd(),"/AnchovetaMSE/data/",OMnams[i],".RData")))
+}
+
+
+
+
+
+
+
+
+
+

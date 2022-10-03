@@ -1,0 +1,109 @@
+
+slp3<-function(y){
+
+  y<-y[!is.na(y)]
+  y<-log(y)
+  x1<-1:length(y)
+  mux<-mean(x1)
+  muy<-mean(y,na.rm=T)
+  SS<-sum((x1-mux)^2,na.rm=T)
+  (1/SS)*sum((x1-mux)*(y-muy),na.rm=T)
+
+}
+#sfExport('slp3')
+
+
+smooth2<-function(xx,plot=F,plotname=""){
+  tofill<-!is.na(xx)
+  xx[xx==0]<-1E3
+  predout<-rep(NA,length(xx))
+  dat<-data.frame(x=1:length(xx),y=log(xx))
+
+  out<-loess(y~x,dat=dat,span=0.5)
+  predout[tofill]<-exp(predict(out))
+  if(plot){
+    plot(xx,type="p",xlab="x",ylab="y",main=plotname)
+    lines(predout,col="#ff000090",lwd=2)
+  }
+  predout
+}
+#sfExport('smooth2')
+
+
+smooth3<-function(xx,plot=F,enp.mult=0.2,plotname=""){
+  tofill<-!is.na(xx)
+  xx[xx==0]<-1E3
+  predout<-rep(NA,length(xx))
+  dat<-data.frame(x=1:length(xx),y=log(xx))
+  enp.target<-sum(tofill)*enp.mult
+  out<-loess(y~x,dat=dat,enp.target=enp.target)
+  predout[tofill]<-exp(predict(out))
+  if(plot){
+    plot(xx,type="p",xlab="x",ylab="y",main=plotname)
+    lines(predout,col="#ff000090",lwd=2)
+  }
+  predout
+}
+#sfExport('smooth3')
+
+# Indices$Name
+proc_dat<-function(x,files,AS=1,refyr=57,Isi=c(1,2,3,4,5,6,10,12,13,14)){
+
+  dat<-readRDS(files[x])
+  nMP<-length(dat)-1
+  dims<-dim(dat[[1]][[1]]$Iobs)
+  nsim<-dims[1]
+  nyr<-dims[3]
+  nI<-length(Isi)#dims[2]
+
+  datlist<-list()
+
+  for(MP in (1:nMP)+1){
+
+    Iobs<-dat[[MP]][[1]]$Iobs[,Isi,]
+    Cobs1<-dat[[MP]][[1]]$Cobs
+    Cobs2<-dat[[MP]][[2]]$Cobs
+    prob<-seq(1,0.5,length.out=length((refyr+1):nyr))
+    Iyr<-sample((refyr+1):nyr,nsim,replace=T,prob=prob)
+    Iind<-cbind(rep(1:nsim,nI),rep(1:nI,each=nsim),rep(Iyr,nI))
+    Bind<-cbind(1:nsim,Iyr)
+    Bt<-dat[[MP]][[AS]]$VBty_PI[Bind]
+    dep<-dat[[MP]][[AS]]$Dep_PI[Bind]
+    mod<-dep^(1/3)
+    est<-Bt*mod
+    muI<-hI<-rI4<-rI8<-array(NA,c(nsim,nI))
+
+    for(ii in 1:nrow(Iind)){
+      Is<-smooth2(Iobs[Iind[ii,1],Iind[ii,2],],plot=F)
+      muI[Iind[ii,1],Iind[ii,2]]<-Is[Iind[ii,3]]
+      hI[Iind[ii,1],Iind[ii,2]]<-mean(Iobs[Iind[ii,1],Iind[ii,2],refyr:Iind[ii,3]],na.rm=T)
+      rI4[Iind[ii,1],Iind[ii,2]]<-slp3(Iobs[Iind[ii,1],Iind[ii,2],Iind[ii,3]-(4:1)])
+      rI8[Iind[ii,1],Iind[ii,2]]<-slp3(Iobs[Iind[ii,1],Iind[ii,2],Iind[ii,3]-(8:1)])
+    }
+
+
+    sI4<-sI6<-array(NA,c(nsim,nI))
+    for(ss in 1:nsim){
+      for(ii in 1:nI){
+        sI4[ss,ii]<-slp3(Iobs[ss,ii,refyr+1:4])
+        sI6[ss,ii]<-slp3(Iobs[ss,ii,refyr+1:6])
+      }
+    }
+
+    Cmu1<-Cmu2<-Ch1<-Ch2<-rep(NA,nsim)
+    for(ss in 1:nsim){
+      Ch1[ss]<-mean(Cobs1[ss,refyr:Iyr[ss]])
+      Ch2[ss]<-mean(Cobs2[ss,refyr:Iyr[ss]])
+      Cmu1[ss]<-mean(Cobs1[ss,Iyr[ss]-(3:1)])
+      Cmu2[ss]<-mean(Cobs2[ss,Iyr[ss]-(3:1)])
+    }
+
+    datlist[[MP-1]]<-cbind(est,muI,hI,rI4,rI8,sI4,sI6,Cmu1,Cmu2,Ch1,Ch2,Iyr)
+
+  }
+
+  outlist<-list.rbind(datlist)
+  colnames(outlist)<-c("bt",paste0("mui_",1:nI),paste0("hi_",1:nI),paste0("ri4_",1:nI),paste0("ri8_",1:nI),paste0("si4_",1:nI),paste0("si6_",1:nI),"cmu1","cmu2","ch1","ch2","iyr")
+  outlist
+
+}
