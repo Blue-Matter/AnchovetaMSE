@@ -1,5 +1,4 @@
 
-
 exampledat<-function(){
 
   library(openMSE)
@@ -10,14 +9,46 @@ exampledat<-function(){
 
 }
 
+PA_Ref<-function(x,Data, reps=1, unit=1E9,cpF=0.2){
+  ny<-length(Data@Year)-dim(Data@Misc$StockPars$N)[3]+1
+  N<-apply(Data@Misc$StockPars$N_P[x,,ny,],1,sum)
+  wtage<-Data@Misc$StockPars$Wt_age[x,,ny]
+  lenage<-Data@Misc$StockPars$Len_age[x,,ny]
+  t0<-Data@Misc$StockPars$t0[x]
+  K<-Data@Misc$StockPars$K[x]
+  Linf<-Data@Misc$StockPars$Linf[x]# lenage == Linf*(1-exp(-K*((0:5)-t0)))
+  wla<-Data@Misc$StockPars$a
+  wlb<-Data@Misc$StockPars$b
+  sel<-Data@Misc$FleetPars$V_real[x,,ny]
+  VB<-sum(N*wtage*sel)/unit
+  #VB<- (Data@AddInd[x,1,ny] * exp(-0.8/2))
+  #temp<-VB-L
+  #if(temp<0)temp=0
+  nt<-12
+  Mm<-0.8/nt
+  Fm<-cpF/nt
+  Zm<-Mm+Fm
+  VBt<-TACt<-rep(NA,nt)
 
-PA_Ref<-function(x,Data, reps=1, cpF=0.2){
-  ny<-length(Data@Year)-44
-  VB<-sum(Data@Misc$StockPars$VBiomass_P[x,,ny,])
+  for(i in 1:nt){
+
+    if(i==1) VBt[i]<-VB
+    if(i>1){
+      N<-N*exp(-Zm*sel)
+      lenatseason<-(Linf*(1-exp(-K*((0:5)+(i/12)-t0))))
+      watseason<-wla*lenatseason^wlb
+      VBt[i]<-sum(N*watseason*sel)/unit
+    }
+
+    TACt[i]<-VBt[i]*(1-exp(-Zm))*(Fm/Zm)
+
+  }
+
   Rec <- new("Rec")
-  Rec@TAC<-VB*cpF
+  Rec@TAC<-sum(TACt)*unit
   Rec
 }
+
 class(PA_Ref)<-"MP"
 
 PA_Ref_15<-function(x,Data,reps=1)PA_Ref(x=x,Data=Data,reps=reps,cpF=0.15)
@@ -25,7 +56,6 @@ PA_Ref_20<-function(x,Data,reps=1)PA_Ref(x=x,Data=Data,reps=reps,cpF=0.2)
 PA_Ref_25<-function(x,Data,reps=1)PA_Ref(x=x,Data=Data,reps=reps,cpF=0.25)
 PA_Ref_30<-function(x,Data,reps=1)PA_Ref(x=x,Data=Data,reps=reps,cpF=0.3)
 PA_Ref_35<-function(x,Data,reps=1)PA_Ref(x=x,Data=Data,reps=reps,cpF=0.35)
-PA_Ref_40<-function(x,Data,reps=1)PA_Ref(x=x,Data=Data,reps=reps,cpF=0.40)
 
 class(PA_Ref_15)<-class(PA_Ref_20)<-class(PA_Ref_25)<-class(PA_Ref_30)<-class(PA_Ref_35)<-class(PA_Ref_40)<-"MP"
 
@@ -35,71 +65,115 @@ examplePAdat<-function(){
 
   #test<-runMSE(PA_OM_1,MPs=paste0("PA_Ref_",seq(15,40,by=5)))
   #test<-runMSE(PA_OM_1,MPs=c("FMSYref","FMSYref75","FMSYref50"))
-  test2<-runMSE(PA_OM_1,MPs="PA_HS",extended=T)
+  PA_OM_1
+  OM_test<-SubCpars(PA_OM_1,sims<-1:12
+
+  test2<-runMSE(OM_testextended=T,Hist=T)
+  test2@SampPars$Obs$AddInd_Stat[[1]][,2]<-1E-5
+  test3<-Project(test2,MPs=c("PA_HS","PA_Ref_15"),extended=T)
+  MSEobj<-Project(test2,MPs=c(paste0("PA_Ref_",seq(15,35,by=5)),paste0("PA_HS_",seq(10,50,by=10))),extended=T)
+  MSEobj<-Project(test2,MPs=c(paste0("PA_Ref_",c(20,35)),paste0("PA_HS_",c("01","50")),paste0("PA_HS_T",c(5,10))),extended=T)
+
+  MSEobj<-Project(test2,MPs=c(paste0("PA_Ref_",c(15,40)),paste0("PA_HS_T",5:9)),extended=T)
+  MSEobj<-Project(test2,MPs="PA_HS_10",extended=T)
+
+  PA_TOplot(MSEobj)
+  TSplot(MSEobj)
+  TSplot(MSEobj,slot="Catch",name="Catch (Mt)")
+
+  Data<-test3@PPD[[2]]
+  Data<-readRDS("C:/temp/Data.rda")
 }
 
 
-PA_HS<-function(x, Data, reps=1, unit=1E6, Fmin=0.2/12, Fmax=0.45/12, M=0.8, cvM=0.1, cvB=0.05, L=5, maxF=0.35, p=0.15){
-  ny<-length(Data@Year)-44
-  VB<-sum(Data@Misc$StockPars$VBiomass_P[x,,ny,])/unit
-  # VB<-20
+sapply(X=1:12,FUN=function(X,Data)PA_HS(x=X,Data=Data),Data=Data)
+
+slp3<-function(y){
+  y<-y[!is.na(y)]
+  #if(is.na(sum(log(y))))print(y)
+  #y<-log(y)
+  x1<-1:length(y)
+  mux<-mean(x1)
+  muy<-mean(y,na.rm=T)
+  SS<-sum((x1-mux)^2,na.rm=T)
+  (1/SS)*sum((x1-mux)*(y-muy),na.rm=T)
+
+}
+
+getcur<-function(yr,plot=F,mAss){
+
+  if(length(yr)==1){
+    return(yr)
+  }else{
+
+    y<-log(yr)
+    slp<-slp3(y)#*mean(y)
+    x<-1:length(y)
+    xint<-mean(y)-mean(x)*slp
+    xtick<-c(0,1:length(y))
+    ypred<-xint+xtick*slp
+    curest<-exp(ypred[length(ypred)])
+    if(plot){
+
+      plot(xtick,exp(c(NA,y)),ylim=exp(range(c(y,ypred))),pch=19,xlab="Month",ylab="Survey Observation (Mt)")
+      abline(h=seq(0,100,by=1),col="grey",lty=1)
+      lines(xtick,exp(ypred),col="blue")
+      points(xtick,exp(ypred),col="blue")
+      points(length(y),curest,pch=19,cex=1.2,col="red")
+      legend('topright',legend=c(paste("Z =",round(-slp,4)),
+                                 paste("M =",round(mAss,4)),
+                                 paste("F =",round(-slp-mAss,4)),
+                                 paste("Cur Est =",round(curest,2))), text.col=c("blue","black","blue","red"))
+
+    }
+    if(all(curest > yr))curest=min(yr)
+    return(curest)
+  }
+
+}
+
+
+
+PA_HS<-function(x, Data, reps=1, unit=1E9, Fmin=0.05/12, Fmax=0.9/12, M=0.8, cvM=0.1, cvB=0.1, L=5, maxF=0.35, p=0.1){
+
+  saveRDS(Data,"C:/temp/Data.rda")
+  ny<-length(Data@Year)-dim(Data@Misc$StockPars$N)[3]+1
+  N<-apply(Data@Misc$StockPars$N_P[x,,ny,],1,sum)
+  wtage<-Data@Misc$StockPars$Wt_age[x,,ny]
+  lenage<-Data@Misc$StockPars$Len_age[x,,ny]
+  t0<-Data@Misc$StockPars$t0[x]
+  K<-Data@Misc$StockPars$K[x]
+  Linf<-Data@Misc$StockPars$Linf[x]# lenage == Linf*(1-exp(-K*((0:5)-t0)))
+  wla<-Data@Misc$StockPars$a
+  wlb<-Data@Misc$StockPars$b
+  sel<-Data@Misc$FleetPars$V_real[x,,ny]
+  VB<-sum(N*wtage*sel)/unit
+  #VB<-Data@AddInd[x,1,ny]/unit
+
   nt<-12
   Mm<-0.8/nt
   Fdec<-VBt<-VBo<-TACt<-rep(NA,nt)
   OE<-trlnorm(nt,1,0.1)
-  ns<-10000
-
-  slp3<-function(y){
-    y<-y[!is.na(y)]
-    y<-log(y)
-    x1<-1:length(y)
-    mux<-mean(x1)
-    muy<-mean(y,na.rm=T)
-    SS<-sum((x1-mux)^2,na.rm=T)
-    (1/SS)*sum((x1-mux)*(y-muy),na.rm=T)
-
-  }
-
-  getcur<-function(yr,plot=F,mAss){
-
-    if(length(yr)==1){
-      return(yr)
-    }else{
-
-      y<-log(yr)
-      slp<-slp3(y)*mean(y)
-      x<-1:length(y)
-      xint<-mean(y)-mean(x)*slp
-      xtick<-c(0,1:length(y))
-      ypred<-xint+xtick*slp
-      curest<-exp(ypred[length(ypred)])
-      if(plot){
-
-        plot(xtick,exp(c(NA,y)),ylim=exp(range(c(y,ypred))),pch=19,xlab="Month",ylab="Survey Observation (Mt)")
-        abline(h=seq(0,100,by=1),col="grey",lty=1)
-        lines(xtick,exp(ypred),col="blue")
-        points(xtick,exp(ypred),col="blue")
-        points(length(y),curest,pch=19,cex=1.2,col="red")
-        legend('topright',legend=c(paste("Z =",round(-slp,4)),
-                                   paste("M =",round(mAss,4)),
-                                   paste("F =",round(-slp-mAss,4)),
-                                   paste("Cur Est =",round(curest,2))), text.col=c("blue","black","blue","red"))
-
-      }
-      return(curest)
-    }
-
-  }
+  ns<-1000
 
   for(i in 1:nt){
 
     if(i==1) VBt[i]<-VB
-    if(i>1)  VBt[i]<-VBt[i-1]*exp(-Mm-Fdec[i-1])
+    if(i>1){
+      N<-N*exp(-Mm-Fdec[i-1]*sel)
+      lenatseason<-(Linf*(1-exp(-K*((0:5)+(i/12)-t0))))
+      watseason<-wla*lenatseason^wlb
+      VBt[i]<-sum(N*watseason*sel)/unit
+      #VBt[i]<-VBt[i-1]*exp(-Mm-Fdec[i-1])*exp(Data@OM$K[x]/12) # approximation to in-season mortality rate and growth
+    }
 
     VBo[i]<-VBt[i]*OE[i]
-    VBsmooth<-getcur(yr=VBo[1:i],plot=F,mAss=Mm)
-
-    Fs<--log(L/trlnorm(ns,VBsmooth,cvB))/(nt-i+1)-trlnorm(ns,Mm,cvM)
+    yr<-VBo[1:i]
+    #if(is.na(sum(log(log(yr)))))print(paste(i,x,ny,yr,sep=" - "))
+    VBsmooth<-getcur(yr,plot=F,mAss=Mm)
+    logterm<-L/trlnorm(ns,VBsmooth,cvB)
+    #if(is.na(sum(logterm)))print(logterm)
+    Fs<--log(logterm)/(nt-i+1)-trlnorm(ns,Mm,cvM)
     Ftemp<-quantile(Fs,p=p)
     if(Ftemp<Fmin)Ftemp<-Fmin
     if(Ftemp>Fmax)Ftemp<-Fmax
@@ -108,16 +182,38 @@ PA_HS<-function(x, Data, reps=1, unit=1E6, Fmin=0.2/12, Fmax=0.45/12, M=0.8, cvM
     if(Ftemp>maxFcons)Ftemp=maxFcons
 
     Fdec[i]<-Ftemp
-    TACt[i]<-Fdec[i]*VBt[i]*exp(-Mm/2)
+    TACt[i]<-VBt[i]*(1-exp(-Mm-Fdec[i]))*Fdec[i]/(Fdec[i]+Mm)
 
   }
 
   Rec <- new("Rec")
-  Rec@TAC<-sum(TACt,na.rm=T)
+  Rec@TAC<-sum(TACt,na.rm=T)*unit
   Rec
 }
 class(PA_HS)<-"MP"
 
+PA_HS_01<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,p=0.01)
+PA_HS_05<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,p=0.05)
+PA_HS_10<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,p=0.1)
+PA_HS_20<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,p=0.2)
+PA_HS_30<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,p=0.3)
+PA_HS_40<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,p=0.4)
+PA_HS_50<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,p=0.5)
+PA_HS_95<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,p=0.95)
+
+
+
+class(PA_HS_01)<-class(PA_HS_05)<-class(PA_HS_10)<-class(PA_HS_20)<-class(PA_HS_30)<-class(PA_HS_40)<-class(PA_HS_50)<-class(PA_HS_95)<-"MP"
+
+PA_HS_T4<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,L=4)
+PA_HS_T5<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,L=5)
+PA_HS_T6<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,L=6)
+PA_HS_T7<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,L=7)
+PA_HS_T8<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,L=8)
+PA_HS_T9<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,L=9)
+PA_HS_T10<-function(x,Data,reps=1)PA_HS(x=x,Data=Data,reps=reps,L=10)
+
+class(PA_HS_T4)<-class(PA_HS_T5)<-class(PA_HS_T6)<-class(PA_HS_T7)<-class(PA_HS_T8)<-class(PA_HS_T9)<-class(PA_HS_T10)<-"MP"
 
 
 
