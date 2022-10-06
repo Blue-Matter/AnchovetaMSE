@@ -77,14 +77,12 @@ consistent with precautionary ecosystem-based fisheries management, may be appli
 
 ***
 
-### Project status (33%)
+### Project status (100%)
 
 Completed:
 
+* Literature review and qualitative feasibility analysis
 * Operating model specified and fitted
-
-In progress:
-
 * Designing and running a range of harvest strategies
 * Write up results in a draft report (see below)
 
@@ -105,9 +103,9 @@ Please email tom@bluematterscience.com to request access.
 
 ### Report Appendices
 
-A detailed description of the Reference Case operating model is available in [Appendix 1](Reports/Peruvian_Anchoveta.html) which includes justifications and references in support of the various population and fishing dynamics. 
+A detailed description of the Reference Case operating model is available in [Appendix A](Reports/Peruvian_Anchoveta.html) which includes justifications and references in support of the various population and fishing dynamics. 
 
-The operating model was conditioned on publicly available data published in [Oliveros-Ramos 2010](Paper/Oliveros - Ramos 2010.pdf). Operating model estimates and statistical properties of model fit are available in a detailed operating model conditioning report[Appendix 2](Reports/RCM.html)
+The operating model was conditioned on publicly available data published in [Oliveros-Ramos 2010](Paper/Oliveros - Ramos 2010.pdf). Operating model estimates and statistical properties of model fit are available in a detailed operating model conditioning report[Appendix B](Reports/RCM.html)
 
 &nbsp;
 &nbsp;
@@ -161,9 +159,10 @@ library(AnchovettaMSE)
 avail('MP') # a list of available MPs. Those starting 'PA' are designed for use with Peruvian Anchoveta
 
 avail('OM') # a list of operating models. Those starting 'PA' are Peruvian Anchoveta operating models
-testMSE<-runMSE(PA_RefCase,MPs=c("PA_F30","PA_F40"))
-plot(testMSE)
-  
+testMSE<-runMSE(PA_OM_1,MPs=c("PA_HS_10","PA_HS_L5"))
+TSplot(testMSE)
+PA_TOplot(testMSE) 
+
 ```
 
 
@@ -175,7 +174,10 @@ plot(testMSE)
 
 ### Background documents and referenced material
 
-<div class="col2">
+
+Great summary of the fishery and recent FIP developments by [CEDARPESCA 2021](https://cedepesca.net/proyectos/peruvian-anchovy-indirect-human-consumption/)
+
+Wonderful summary of harvest strategies for short lived species by [de Moor et al. 2011](References/fsr165.pdf)
 
 2010 Stock Assessment ([Oliveros - Ramos, 2010](References/Oliveros - Ramos 2010.pdf))
 
@@ -183,7 +185,6 @@ Climate change and Anchoveta ([Oliveros - Ramos et al. 2021](References/fao-667-
 
 Growth, Egg production ([Perea et al. 2011](References/Potential_egg_production_recruitment_and_closed_fi.pdf))
 
-</div>
 
 &nbsp;
 &nbsp;
