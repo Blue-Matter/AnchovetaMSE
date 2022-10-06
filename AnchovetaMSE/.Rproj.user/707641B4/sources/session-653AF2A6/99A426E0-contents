@@ -61,17 +61,13 @@ TSplot<-function(MSEobj,slot="B",name="Biomass (Mt)",unit=1E9,MPcols=c("black","
   nr<-ceiling(n^0.5)
   nc<-ceiling(n/nr)
 
-  yrs<-MSEobj@OM$CurrentYr[1]+1:MSEobj@proyears
-  BB<-slot(MSEobj,slot)/unit
-  dat<-apply(BB,3:2,mean)
-  nadd<-9
-  dat<-rbind(array(NA,c(nadd,ncol(dat))),dat)
   par(mfrow=c(nr,nc),mai=c(0.3,0.3,0.3,0.05),omi=c(0.4,0.4,0.01,0.01))
-
-  matplot(c(yrs[1]-(nadd:1),yrs),dat,type="l",col=MPcols,lty=1)
-  legend('left',legend=MSEobj@MPs,text.col=MPcols,bty="n",cex=0.8)
+  BB<-slot(MSEobj,slot)/unit
+  matplot(apply(BB,3:2,mean),type="l",col=MPcols,lty=1)
+  legend('top',legend=MSEobj@MPs,text.col=MPcols,bty="n",cex=0.8)
 
   Blims <- c(0,quantile(BB,0.95))
+  yrs<-MSEobj@OM$CurrentYr[1]+1:MSEobj@proyears
 
   for(i in 1:MSEobj@nMPs){
     plot(range(yrs),Blims,col="white",yaxs="i")

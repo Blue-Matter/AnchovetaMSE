@@ -1,7 +1,7 @@
 Package: AnchovetaMSE
 Type: Package
 Title: Peruvian Anchoveta Management Strategy Evaluation
-Version: 0.1.0
+Version: 0.2.0
 Author: Tom Carruthers
 Maintainer: Tom Carruthers <tom@bluematterscience.com>
 Description: Demonstration Operating Models and Harvest Strategies for Peruvian Anchoveta

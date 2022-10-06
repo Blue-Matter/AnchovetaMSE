@@ -1,0 +1,21 @@
+# run MSEs
+
+library(openMSE)
+setwd("G:/Shared drives/BM shared/1. Projects/Anchoveta - Pew/MSE runs")
+source("Tuning func.R")
+# Reference Case Run
+OM_1<-readRDS("../OM Specification/OM_1.rda") ; OM_1<-SubCpars(OM_1,sims=1:12)
+
+
+OM<-OM_1
+pars<-c(0.5,1,1.5)
+HS<-PA_U
+tunefunc<-function(MSE)apply(MSE@SB_SBMSY[,,21:30],2,mean)
+
+varguess<-dotune(OM,pars,HS, step=0.8,tunefunc,
+                 maxit=10,tunetarg=1.5,tol=0.0001,rnd=3)
+
+
+dotune()
+PA_MSE_1<-runMSE(OM=OM_1,MPs=paste0('PA_U',seq(20,45,by=5)),Hist=F)
+Pplot2(PA_MSE_1)
