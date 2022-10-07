@@ -175,7 +175,7 @@ PA_TOplot(testMSE)
 ### Background documents and referenced material
 
 
-Great summary of the fishery and recent FIP developments by [CEDARPESCA 2021](https://cedepesca.net/proyectos/peruvian-anchovy-indirect-human-consumption/)
+Great summary of the fishery and recent FIP developments by [CEDEPESCA 2021](https://cedepesca.net/proyectos/peruvian-anchovy-indirect-human-consumption/)
 
 Wonderful summary of harvest strategies for short lived species by [de Moor et al. 2011](References/fsr165.pdf)
 
