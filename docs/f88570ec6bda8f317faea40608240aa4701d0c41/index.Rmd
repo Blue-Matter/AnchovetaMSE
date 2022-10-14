@@ -165,6 +165,25 @@ PA_TOplot(testMSE)
 
 ```
 
+&nbsp;
+&nbsp;
+
+
+***
+
+### R code for reproducing results
+
+
+[1. Construct reference case OM](Code/1 - Ref Case OM script.R)
+
+[2. Construct reference set OMs](Code/2 - Ref Set OM script.R)
+
+[3. Codified harvest strategies](Code/3 - Harvest Strategies.R)
+
+[4. Run MSE analyses](Code/4 - MSE all OMs.R)
+
+[5. Make Figures](Code/5 - Make Figures.R)
+
 
 &nbsp;
 &nbsp;
